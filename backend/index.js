@@ -1,12 +1,18 @@
 const express = require('express') //importing express
 const students = require('./students')
 const cors = require('cors')
- 
+const dotenv = require("dotenv").config();
+const mongoose = require("mongoose");
 const app = express() //creating instance of express
-app.use(cors())
+
+const authController = require('./controllers/authController')
+// db connecting
+mongoose.set('strictQuery', false)
+mongoose.connect(process.env.MONGO_URL);
 //middleware-> req se JSON read karke req.body me us JSON ko object bnake store kr lega
 app.use(express.json())
-
+app.use(express.urlencoded({ extended: true }));
+app.use(cors())
 app.listen(5000 , () => {
     console.log('Listening on Port 5000');
 });
@@ -31,6 +37,8 @@ app.post('/api/students' , (req, res) => {
     students.push(user) //appending the data in students wala array that is in another folder named "students"
     res.json(user)
 })
+
+app.use("/auth", authController);
 
 app.put('/api/students/:roll_no' , (req, res) => {
 
